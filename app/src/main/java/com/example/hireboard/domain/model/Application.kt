@@ -1,4 +1,14 @@
 package com.example.hireboard.domain.model
 
-class Application {
+data class Application(
+    val id: Long,
+    val vacancyId: Long,
+    val employeeId: Long,
+    val coverLetter: String,
+    val applicationDate: Long, // timestamp
+    val status: ApplicationStatus
+)
+
+enum class ApplicationStatus {
+    PENDING, REVIEWED, ACCEPTED, REJECTED
 }
