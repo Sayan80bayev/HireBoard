@@ -36,7 +36,7 @@ fun HireBoardTextArea(
                 Text(
                     text = "$label${if (isRequired) " *" else ""}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (isRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             singleLine = false,
