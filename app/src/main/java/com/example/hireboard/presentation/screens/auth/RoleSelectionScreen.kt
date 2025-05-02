@@ -26,6 +26,7 @@ fun RoleSelectionScreen(onRoleSelected: (String) -> Unit) {
         Text(
             text = "Кто вы?",
             style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -47,7 +48,7 @@ fun RoleSelectionScreen(onRoleSelected: (String) -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
 @Composable
 fun RoleSelectionScreenPreview() {
     HireBoardTheme(darkTheme = true) {

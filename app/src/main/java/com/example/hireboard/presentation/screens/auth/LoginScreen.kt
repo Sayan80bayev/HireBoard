@@ -25,7 +25,7 @@ fun LoginScreen(onLogin: (String, String) -> Unit) {
         Text(
             text = "Вход",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface,  // Указываем цвет текста для темной темы
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 

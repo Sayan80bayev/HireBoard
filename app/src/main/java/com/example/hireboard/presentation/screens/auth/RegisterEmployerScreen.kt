@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,9 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.hireboard.presentation.components.HireBoardButton
+import com.example.hireboard.presentation.components.HireBoardTextField
 import com.example.hireboard.ui.theme.HireBoardTheme
 
 @Composable
@@ -34,48 +33,47 @@ fun RegisterEmployerScreen(onRegister: (String, String, String) -> Unit) {
             .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Регистрация Работодателя", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Регистрация Работодателя",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(
+        HireBoardTextField(
             value = companyName,
             onValueChange = { companyName = it },
-            label = { Text("Название компании") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Название компании"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        HireBoardTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Email"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        HireBoardTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Пароль") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            label = "Пароль",
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = { onRegister(companyName, email, password) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Зарегистрироваться")
-        }
+        HireBoardButton(
+            text = "Зарегистрироваться",
+            onClick = { onRegister(companyName, email, password) }
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
 @Composable
 fun RegisterEmployerScreenPreview() {
     HireBoardTheme(darkTheme = true) {
