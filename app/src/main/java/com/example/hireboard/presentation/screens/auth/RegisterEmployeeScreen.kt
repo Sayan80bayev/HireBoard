@@ -1,22 +1,51 @@
 package com.example.hireboard.presentation.screens.auth
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.hireboard.presentation.components.HireBoardButton
-import com.example.hireboard.presentation.components.HireBoardTextField
-import com.example.hireboard.ui.theme.HireBoardTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hireboard.domain.usecase.LoginUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
+import com.example.hireboard.presentation.components.HireBoardButton
+import com.example.hireboard.presentation.components.HireBoardTextField
+import com.example.hireboard.presentation.viewmodels.AuthState
+import com.example.hireboard.presentation.viewmodels.AuthViewModel
+import com.example.hireboard.presentation.viewmodels.factory.AuthViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, String) -> Unit) {
+fun RegisterEmployeeScreen(
+    viewModel: AuthViewModel,
+    onRegisterSuccess: () -> Unit
+) {
+    val authState by viewModel.authState.collectAsState()
+
     var step by remember { mutableIntStateOf(0) }
 
     var name by remember { mutableStateOf("") }
@@ -44,14 +73,13 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
             }
         }
     ) { paddingValues ->
-        // Centering the form vertically and horizontally
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center, // Center the content vertically
-            horizontalAlignment = Alignment.CenterHorizontally // Center the content horizontally
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Регистрация Работника (Шаг ${step + 1} из 3)",
@@ -69,7 +97,6 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
                         isRequired = true
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
                     HireBoardTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -77,6 +104,7 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
                         isRequired = true
                     )
                 }
+
                 1 -> {
                     HireBoardTextField(
                         value = phone,
@@ -85,7 +113,6 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
                         isRequired = true
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
                     HireBoardTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -94,28 +121,24 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
                         isRequired = true
                     )
                 }
+
                 2 -> {
                     HireBoardTextField(
                         value = skills,
                         onValueChange = { skills = it },
-                        label = "Навыки",
-                        isRequired = false
+                        label = "Навыки"
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
                     HireBoardTextField(
                         value = experience,
                         onValueChange = { experience = it },
-                        label = "Опыт работы",
-                        isRequired = false
+                        label = "Опыт работы"
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
                     HireBoardTextField(
                         value = education,
                         onValueChange = { education = it },
-                        label = "Образование",
-                        isRequired = false
+                        label = "Образование"
                     )
                 }
             }
@@ -128,19 +151,54 @@ fun RegisterEmployeeScreen(onRegister: (String, String, String, String, String, 
                     if (step < 2) {
                         step++
                     } else {
-                        onRegister(name, email, password, phone, skills, experience)
+                        viewModel.registerEmployee(
+                            name = name,
+                            email = email,
+                            password = password,
+                            phone = phone,
+                            skills = skills,
+                            experience = experience,
+                            education = education
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            when (val state = authState) {
+                is AuthState.Loading -> CircularProgressIndicator()
+                is AuthState.Error -> Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                is AuthState.Success -> {
+                    LaunchedEffect(Unit) {
+                        onRegisterSuccess()
+                        viewModel.resetState()
+                    }
+                }
+                else -> {}
+            }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF121212)
-@Composable
-fun RegisterEmployeeScreenPreview() {
-    HireBoardTheme(darkTheme = true) {
-        RegisterEmployeeScreen(onRegister = { _, _, _, _, _, _ -> })
-    }
-}
+//@Preview(showBackground = true, backgroundColor = 0xFF121212)
+//@Composable
+//fun RegisterEmployeeScreenPreview() {
+//    HireBoardTheme(darkTheme = true) {
+//        RegisterEmployeeScreen(
+//            loginUseCase = { _, _ -> Result.failure(Exception("Preview")) },
+//            registerEmployeeUseCase = {
+//                Result.success(1L)
+//            },
+//            registerEmployerUseCase = {
+//                Result.success(1L)
+//            },
+//            onRegisterSuccess = {}
+//        )
+//    }
+//}

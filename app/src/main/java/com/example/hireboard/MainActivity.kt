@@ -1,20 +1,46 @@
 package com.example.hireboard
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.Surface
+import androidx.navigation.compose.rememberNavController
+import com.example.hireboard.data.local.dao.impl.UserDaoImpl
+import com.example.hireboard.data.local.db.AppDatabase
+import com.example.hireboard.data.repository.UserRepository
+import com.example.hireboard.domain.usecase.LoginUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
+import com.example.hireboard.presentation.navigation.AppNavHost
+import com.example.hireboard.ui.theme.HireBoardTheme
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val db = AppDatabase(context = this)
+        val userDao = UserDaoImpl(db)
+        val userRepository = UserRepository(userDao)
+
+        val loginUseCase = LoginUseCase(userRepository)
+        val registerEmployeeUseCase = RegisterEmployeeUseCase(userRepository)
+        val registerEmployerUseCase = RegisterEmployerUseCase(userRepository)
+
+        setContent {
+            HireBoardTheme {
+                val navController = rememberNavController()
+                Surface {
+                    AppNavHost(
+                        navController = navController,
+                        loginUseCase = loginUseCase,
+                        registerEmployeeUseCase = registerEmployeeUseCase,
+                        registerEmployerUseCase = registerEmployerUseCase,
+                        onAuthSuccess = {
+                            // Navigate to home screen or dashboard here
+                        }
+                    )
+                }
+            }
         }
     }
 }

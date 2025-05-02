@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.navigation.runtime.android)
+    implementation(libs.androidx.navigation.compose)
 //    implementation(libs.ads.mobile.sdk)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
