@@ -20,20 +20,10 @@ object AuthScreens {
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController,
-    loginUseCase: LoginUseCase,
-    registerEmployeeUseCase: RegisterEmployeeUseCase,
-    registerEmployerUseCase: RegisterEmployerUseCase,
+    authViewModel: AuthViewModel,
     onAuthSuccess: () -> Unit
 ) {
-    val authViewModelFactory = AuthViewModelFactory(
-        loginUseCase,
-        registerEmployeeUseCase,
-        registerEmployerUseCase
-    )
-
     composable(AuthScreens.Login) {
-        val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
-
         LoginScreen(
             viewModel = authViewModel,
             onLoginSuccess = onAuthSuccess,
@@ -55,8 +45,6 @@ fun NavGraphBuilder.authNavGraph(
     }
 
     composable(AuthScreens.RegisterEmployer) {
-        val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
-
         RegisterEmployerScreen(
             viewModel = authViewModel,
             onRegisterSuccess = onAuthSuccess
@@ -64,8 +52,6 @@ fun NavGraphBuilder.authNavGraph(
     }
 
     composable(AuthScreens.RegisterEmployee) {
-        val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
-
         RegisterEmployeeScreen(
             viewModel = authViewModel,
             onRegisterSuccess = onAuthSuccess

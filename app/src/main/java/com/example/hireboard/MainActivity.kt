@@ -34,10 +34,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         loginUseCase = loginUseCase,
                         registerEmployeeUseCase = registerEmployeeUseCase,
-                        registerEmployerUseCase = registerEmployerUseCase,
-                        onAuthSuccess = {
-                            // Navigate to home screen or dashboard here
-                        }
+                        registerEmployerUseCase = registerEmployerUseCase
                     )
                 }
             }

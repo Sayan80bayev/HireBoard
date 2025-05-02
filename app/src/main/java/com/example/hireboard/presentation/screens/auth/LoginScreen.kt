@@ -1,24 +1,30 @@
 package com.example.hireboard.presentation.screens.auth
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hireboard.presentation.components.HireBoardButton
 import com.example.hireboard.presentation.components.HireBoardTextField
 import com.example.hireboard.presentation.viewmodels.AuthState
 import com.example.hireboard.presentation.viewmodels.AuthViewModel
-import com.example.hireboard.ui.theme.HireBoardTheme
-import com.example.hireboard.domain.usecase.LoginUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
-import com.example.hireboard.presentation.viewmodels.factory.AuthViewModelFactory
 
 @Composable
 fun LoginScreen(
@@ -96,7 +102,7 @@ fun LoginScreen(
             is AuthState.Success -> {
                 LaunchedEffect(Unit) {
                     onLoginSuccess()
-                    viewModel.resetState()
+//                    viewModel.resetState()
                 }
             }
             else -> {}

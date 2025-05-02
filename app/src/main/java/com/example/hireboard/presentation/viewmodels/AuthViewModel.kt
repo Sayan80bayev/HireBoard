@@ -16,16 +16,28 @@ class AuthViewModel(
     private val registerEmployerUseCase: RegisterEmployerUseCase
 ) : ViewModel() {
 
+    // Existing state flow for UI
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
+
+    // New direct user storage
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             val result = loginUseCase(email, password)
             _authState.value = result.fold(
-                onSuccess = { AuthState.Success(it) },
-                onFailure = { AuthState.Error(it.message ?: "Unknown error") }
+                onSuccess = { user ->
+                    _currentUser.value = user  // Store the user
+                    println("Login success! User: $user")
+                    AuthState.Success(user)
+                },
+                onFailure = {
+                    println("Login error: ${it.message}")
+                    AuthState.Error(it.message ?: "Unknown error")
+                }
             )
         }
     }
@@ -53,8 +65,16 @@ class AuthViewModel(
             )
             val result = registerEmployeeUseCase(employee)
             _authState.value = result.fold(
-                onSuccess = { AuthState.Registered(it) },
-                onFailure = { AuthState.Error(it.message ?: "Registration failed") }
+                onSuccess = { newId ->
+                    val savedEmployee = employee.copy(id = newId)
+                    _currentUser.value = savedEmployee  // Store the user
+                    println("Employee registered! User: $savedEmployee")
+                    AuthState.Success(savedEmployee)
+                },
+                onFailure = {
+                    println("Registration error: ${it.message}")
+                    AuthState.Error(it.message ?: "Registration failed")
+                }
             )
         }
     }
@@ -80,13 +100,27 @@ class AuthViewModel(
             )
             val result = registerEmployerUseCase(employer)
             _authState.value = result.fold(
-                onSuccess = { AuthState.Registered(it) },
-                onFailure = { AuthState.Error(it.message ?: "Registration failed") }
+                onSuccess = { newId ->
+                    val savedEmployer = employer.copy(id = newId)
+                    _currentUser.value = savedEmployer  // Store the user
+                    println("Employer registered! User: $savedEmployer")
+                    AuthState.Success(savedEmployer)
+                },
+                onFailure = {
+                    println("Registration error: ${it.message}")
+                    AuthState.Error(it.message ?: "Registration failed")
+                }
             )
         }
     }
 
     fun resetState() {
+        _authState.value = AuthState.Idle
+        // Don't reset currentUser here - it should persist until logout
+    }
+
+    fun logout() {
+        _currentUser.value = null
         _authState.value = AuthState.Idle
     }
 }
@@ -95,6 +129,5 @@ sealed class AuthState {
     data object Idle : AuthState()
     data object Loading : AuthState()
     data class Success(val user: User) : AuthState()
-    data class Registered(val userId: Long) : AuthState()
     data class Error(val message: String) : AuthState()
 }
