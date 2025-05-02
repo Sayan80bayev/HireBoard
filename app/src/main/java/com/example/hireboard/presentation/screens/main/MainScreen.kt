@@ -46,7 +46,7 @@ fun MainScreenEmployeePreview() {
 @Preview(showBackground = true)
 @Composable
 fun MainScreenEmployerPreview() {
-    HireBoardTheme(darkTheme = false) {
+    HireBoardTheme(darkTheme = true) {
         MainScreen(isEmployer = true)
     }
 }
