@@ -1,15 +1,13 @@
 package com.example.hireboard.presentation.navigation
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.example.hireboard.domain.usecase.LoginUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
-import com.example.hireboard.presentation.screens.auth.*
+import com.example.hireboard.presentation.screens.auth.LoginScreen
+import com.example.hireboard.presentation.screens.auth.RegisterEmployeeScreen
+import com.example.hireboard.presentation.screens.auth.RegisterEmployerScreen
+import com.example.hireboard.presentation.screens.auth.RoleSelectionScreen
 import com.example.hireboard.presentation.viewmodels.AuthViewModel
-import com.example.hireboard.presentation.viewmodels.factory.AuthViewModelFactory
 
 object AuthScreens {
     const val Login = "login"

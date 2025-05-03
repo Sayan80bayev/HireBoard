@@ -4,13 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
-import com.example.hireboard.domain.model.User
+import com.example.hireboard.domain.usecase.CreateVacancyUseCase
+import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
@@ -23,7 +22,9 @@ fun AppNavHost(
     loginUseCase: LoginUseCase,
     registerEmployeeUseCase: RegisterEmployeeUseCase,
     registerEmployerUseCase: RegisterEmployerUseCase,
-    onAuthSuccess: () -> Unit = {} // Make optional with empty default
+    createVacancyUseCase: CreateVacancyUseCase,
+    getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase,
+    onAuthSuccess: () -> Unit = {}
 ) {
     val authViewModel = remember {
         AuthViewModel(
@@ -63,7 +64,10 @@ fun AppNavHost(
         }
 
         mainNavGraph(
-            user = currentUser // Use the stored user
+            user = currentUser,
+            createVacancyUseCase = createVacancyUseCase,
+            getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+            navController = navController
         )
     }
 }

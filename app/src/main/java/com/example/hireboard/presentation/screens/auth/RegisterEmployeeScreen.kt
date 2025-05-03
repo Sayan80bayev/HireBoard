@@ -28,15 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.hireboard.domain.usecase.LoginUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
-import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
 import com.example.hireboard.presentation.components.HireBoardButton
 import com.example.hireboard.presentation.components.HireBoardTextField
 import com.example.hireboard.presentation.viewmodels.AuthState
 import com.example.hireboard.presentation.viewmodels.AuthViewModel
-import com.example.hireboard.presentation.viewmodels.factory.AuthViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

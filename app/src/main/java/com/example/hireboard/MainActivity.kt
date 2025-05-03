@@ -6,8 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import com.example.hireboard.data.local.dao.impl.UserDaoImpl
+import com.example.hireboard.data.local.dao.impl.VacancyDaoImpl
 import com.example.hireboard.data.local.db.AppDatabase
 import com.example.hireboard.data.repository.UserRepository
+import com.example.hireboard.data.repository.VacancyRepository
+import com.example.hireboard.domain.usecase.CreateVacancyUseCase
+import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
@@ -21,10 +25,15 @@ class MainActivity : ComponentActivity() {
         val db = AppDatabase(context = this)
         val userDao = UserDaoImpl(db)
         val userRepository = UserRepository(userDao)
+        val vacancyDao = VacancyDaoImpl(db)
+        val vacancyRepository = VacancyRepository(vacancyDao)
+
 
         val loginUseCase = LoginUseCase(userRepository)
         val registerEmployeeUseCase = RegisterEmployeeUseCase(userRepository)
         val registerEmployerUseCase = RegisterEmployerUseCase(userRepository)
+        val createVacancyUseCase = CreateVacancyUseCase(vacancyRepository)
+        val getEmployerVacanciesUseCase = GetEmployerVacanciesUseCase(vacancyRepository)
 
         setContent {
             HireBoardTheme {
@@ -34,7 +43,9 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         loginUseCase = loginUseCase,
                         registerEmployeeUseCase = registerEmployeeUseCase,
-                        registerEmployerUseCase = registerEmployerUseCase
+                        registerEmployerUseCase = registerEmployerUseCase,
+                        createVacancyUseCase = createVacancyUseCase,
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase
                     )
                 }
             }
