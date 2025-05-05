@@ -65,22 +65,14 @@ fun NavGraphBuilder.mainNavGraph(
                     )
                 }
 
-                val vacancyState by vacancyViewModel.vacancyState.collectAsState()
-
-                LaunchedEffect(vacancyState) {
-                    when (vacancyState) {
-                        is VacancyState.VacancyCreated -> {
-                            navController.popBackStack()
-                            vacancyViewModel.resetState()
-                        }
-                        else -> {}
-                    }
-                }
-
                 VacancyCreationScreen(
+                    viewModel = vacancyViewModel,
                     onBackClick = { navController.popBackStack() },
                     onCreateClick = { vacancy ->
                         vacancyViewModel.createVacancy(vacancy)
+                    },
+                    onCreationSuccess = {
+                        navController.popBackStack() // First pop
                     }
                 )
             }

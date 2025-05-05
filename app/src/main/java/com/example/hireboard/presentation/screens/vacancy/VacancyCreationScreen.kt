@@ -11,23 +11,32 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hireboard.presentation.components.*
-import com.example.hireboard.ui.theme.HireBoardTheme
+import com.example.hireboard.presentation.viewmodels.VacancyState
+import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
 enum class CreationStep { BASIC_INFO, REQUIREMENTS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VacancyCreationScreen(
+    viewModel: VacancyViewModel,
     onBackClick: () -> Unit,
     onCreateClick: (VacancyCreationState) -> Unit,
+    onCreationSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentStep by remember { mutableStateOf(CreationStep.BASIC_INFO) }
     val state = remember { mutableStateOf(VacancyCreationState()) }
     val descriptionState = remember { mutableStateOf(TextFieldValue(state.value.description)) }
+    val vacancyState by viewModel.vacancyState.collectAsState()
+
+    LaunchedEffect(vacancyState) {
+        if (vacancyState is VacancyState.VacancyCreated) {
+            onCreationSuccess()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -68,12 +77,13 @@ fun VacancyCreationScreen(
                 )
                 CreationStep.REQUIREMENTS -> RequirementsStep(
                     state = state,
-                    onSubmit = {  },
+                    onSubmit = onCreateClick,
                     modifier = Modifier.widthIn(max = 500.dp)
                 )
             }
         }
     }
+
 }
 
 @Composable
@@ -126,7 +136,7 @@ private fun BasicInfoStep(
 @Composable
 private fun RequirementsStep(
     state: MutableState<VacancyCreationState>,
-    onSubmit: () -> Unit,
+    onSubmit: (VacancyCreationState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -160,7 +170,7 @@ private fun RequirementsStep(
 
         HireBoardButton(
             text = "Создать вакансию",
-            onClick = onSubmit,
+            onClick = {onSubmit(state.value)},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -200,37 +210,3 @@ data class VacancyCreationState(
     val skills: String = "",
     val location: String = ""
 )
-
-@Preview(showBackground = true)
-@Composable
-fun VacancyCreationScreenPreview() {
-    HireBoardTheme (darkTheme = true){
-        VacancyCreationScreen(
-            onBackClick = {},
-            onCreateClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun BasicInfoStepPreview() {
-    HireBoardTheme {
-        BasicInfoStep(
-            state = remember { mutableStateOf(VacancyCreationState()) },
-            descriptionState = remember { mutableStateOf(TextFieldValue()) },
-            onNext = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RequirementsStepPreview() {
-    HireBoardTheme {
-        RequirementsStep(
-            state = remember { mutableStateOf(VacancyCreationState()) },
-            onSubmit = {}
-        )
-    }
-}
