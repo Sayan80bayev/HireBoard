@@ -11,10 +11,13 @@ import com.example.hireboard.data.local.db.AppDatabase
 import com.example.hireboard.data.repository.UserRepository
 import com.example.hireboard.data.repository.VacancyRepository
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
+import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
+import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.presentation.navigation.AppNavHost
 import com.example.hireboard.ui.theme.HireBoardTheme
 
@@ -34,6 +37,9 @@ class MainActivity : ComponentActivity() {
         val registerEmployerUseCase = RegisterEmployerUseCase(userRepository)
         val createVacancyUseCase = CreateVacancyUseCase(vacancyRepository)
         val getEmployerVacanciesUseCase = GetEmployerVacanciesUseCase(vacancyRepository)
+        val getVacancyUseCase = GetVacancyUseCase(vacancyRepository)
+        val updateVacancyUseCase = UpdateVacancyUseCase(vacancyRepository)
+        val deleteVacancyUseCase = DeleteVacancyUseCase(vacancyRepository)
 
         setContent {
             HireBoardTheme {
@@ -45,7 +51,10 @@ class MainActivity : ComponentActivity() {
                         registerEmployeeUseCase = registerEmployeeUseCase,
                         registerEmployerUseCase = registerEmployerUseCase,
                         createVacancyUseCase = createVacancyUseCase,
-                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase
                     )
                 }
             }

@@ -9,10 +9,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
+import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
+import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.presentation.viewmodels.AuthState
 import com.example.hireboard.presentation.viewmodels.AuthViewModel
 
@@ -24,6 +27,9 @@ fun AppNavHost(
     registerEmployerUseCase: RegisterEmployerUseCase,
     createVacancyUseCase: CreateVacancyUseCase,
     getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase,
+    getVacancyUseCase: GetVacancyUseCase,
+    deleteVacancyUseCase: DeleteVacancyUseCase,
+    updateVacancyUseCase: UpdateVacancyUseCase,
     onAuthSuccess: () -> Unit = {}
 ) {
     val authViewModel = remember {
@@ -67,7 +73,10 @@ fun AppNavHost(
             user = currentUser,
             createVacancyUseCase = createVacancyUseCase,
             getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
-            navController = navController
+            navController = navController,
+            getVacancyUseCase = getVacancyUseCase,
+            deleteVacancyUseCase = deleteVacancyUseCase,
+            updateVacancyUseCase = updateVacancyUseCase
         )
     }
 }

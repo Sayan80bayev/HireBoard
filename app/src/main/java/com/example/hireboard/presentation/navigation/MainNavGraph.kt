@@ -10,10 +10,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.hireboard.domain.model.User
+import com.example.hireboard.domain.model.Vacancy
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
+import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetVacancyUseCase
+import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.presentation.screens.main.MainScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyCreationScreen
+import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsScreen
+import com.example.hireboard.presentation.screens.vacancy.VacancyUpdateScreen
 import com.example.hireboard.presentation.viewmodels.VacancyState
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
@@ -21,7 +27,10 @@ fun NavGraphBuilder.mainNavGraph(
     navController: NavHostController,
     user: User?,
     createVacancyUseCase: CreateVacancyUseCase,
-    getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase
+    getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase,
+    getVacancyUseCase: GetVacancyUseCase,
+    deleteVacancyUseCase: DeleteVacancyUseCase,
+    updateVacancyUseCase: UpdateVacancyUseCase
 ) {
     navigation(
         startDestination = "main_screen",
@@ -33,7 +42,10 @@ fun NavGraphBuilder.mainNavGraph(
                     VacancyViewModel(
                         currentUser = user,
                         createVacancyUseCase = createVacancyUseCase,
-                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase
                     )
                 }
 
@@ -61,7 +73,10 @@ fun NavGraphBuilder.mainNavGraph(
                     VacancyViewModel(
                         currentUser = user,
                         createVacancyUseCase = createVacancyUseCase,
-                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase
                     )
                 }
 
@@ -72,23 +87,67 @@ fun NavGraphBuilder.mainNavGraph(
                         vacancyViewModel.createVacancy(vacancy)
                     },
                     onCreationSuccess = {
-                        navController.popBackStack() // First pop
+                        navController.popBackStack()
                     }
                 )
             }
         }
 
-        // Vacancy details screen
-//        composable(VacancyRoutes.VacancyDetails) { backStackEntry ->
-//            val vacancyId = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
-//            // Here you would fetch the specific vacancy details
-//            // For now just show a simple screen
-//            if (vacancyId != null) {
-//                VacancyDetailsScreen(
-//                    vacancyId = vacancyId,
-//                    onBackClick = { navController.popBackStack() }
-//                )
-//            }
-//        }
+        composable(VacancyRoutes.VacancyDetails) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
+            if (id != null && user is User.Employer) {
+                val vacancyViewModel = remember {
+                    VacancyViewModel(
+                        currentUser = user,
+                        createVacancyUseCase = createVacancyUseCase,
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase
+                    )
+                }
+
+                VacancyDetailsScreen(
+                    id = id,
+                    viewModel = vacancyViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onDeleteSuccess = {
+                        navController.popBackStack()
+                    },
+                    onUpdateClick = { vacancyId ->
+                        navController.navigate(VacancyRoutes.vacancyUpdate(vacancyId))
+                    }
+                )
+            }
+        }
+
+        composable(VacancyRoutes.VacancyUpdate) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
+            if (id != null && user is User.Employer){
+                val vacancyViewModel = remember {
+                    VacancyViewModel(
+                        currentUser = user,
+                        createVacancyUseCase = createVacancyUseCase,
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase
+                    )
+                }
+
+                VacancyUpdateScreen(
+                    id = id,
+                    viewModel = vacancyViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onUpdateClick = { vacancy ->
+                        vacancyViewModel.updateVacancy(vacancy)
+                    },
+                    onUpdateSuccess = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+
     }
 }
