@@ -12,6 +12,7 @@ import com.example.hireboard.data.repository.UserRepository
 import com.example.hireboard.data.repository.VacancyRepository
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
+import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
         val getVacancyUseCase = GetVacancyUseCase(vacancyRepository)
         val updateVacancyUseCase = UpdateVacancyUseCase(vacancyRepository)
         val deleteVacancyUseCase = DeleteVacancyUseCase(vacancyRepository)
+        val getAllActiveVacanciesUseCase = GetAllActiveVacanciesUseCase(vacancyRepository)
 
         setContent {
             HireBoardTheme {
@@ -54,7 +56,8 @@ class MainActivity : ComponentActivity() {
                         getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
                         getVacancyUseCase = getVacancyUseCase,
                         updateVacancyUseCase = updateVacancyUseCase,
-                        deleteVacancyUseCase = deleteVacancyUseCase
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
                 }
             }

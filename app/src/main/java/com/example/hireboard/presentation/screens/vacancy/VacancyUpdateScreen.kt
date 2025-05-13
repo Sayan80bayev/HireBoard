@@ -28,80 +28,90 @@ fun VacancyUpdateScreen(
     onUpdateSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    viewModel.getVacancyDetails(id)
-    var currentStep by remember { mutableStateOf(UpdateStep.BASIC_INFO) }
-    val vacancyState by viewModel.vacancyState.collectAsState()
+    LaunchedEffect(id) {
+        viewModel.getVacancyDetails(id)
+    }
+
     val selectedVacancy by viewModel.selectedVacancy.collectAsState()
 
-    println("Selected vacancy: $selectedVacancy")
-    val initialState = remember {
-        VacancyUpdateState(
-            id = selectedVacancy?.id?: 0,
-            title = selectedVacancy?.title ?: "",
-            description = selectedVacancy?.description ?: "",
-            location = selectedVacancy?.location ?: "",
-            salary = selectedVacancy?.salary ?: "",
-            experience = selectedVacancy?.experienceRequired ?: "",
-            skills = selectedVacancy?.skillsRequired ?: ""
-        )
-    }
+    if (selectedVacancy == null) {
+        // Show loading state
+        CircularProgressIndicator()
+    } else {
+        var currentStep by remember { mutableStateOf(UpdateStep.BASIC_INFO) }
+        val vacancyState by viewModel.vacancyState.collectAsState()
 
-    val state = remember { mutableStateOf(initialState) }
-    val descriptionState = remember { mutableStateOf(TextFieldValue(state.value.description)) }
-
-    LaunchedEffect(vacancyState) {
-        if (vacancyState is VacancyState.VacancyCreated) {
-            viewModel.clearSelectedVacancy()
-            onUpdateSuccess()
+        println("Selected vacancy: $selectedVacancy")
+        val initialState = remember {
+            selectedVacancy?.let {
+                VacancyUpdateState(
+                    id = it.id,
+                    title = it.title,
+                    description = it.description,
+                    location = it.location,
+                    salary = it.salary,
+                    experience = it.experienceRequired,
+                    skills = it.skillsRequired
+                )
+            } ?: VacancyUpdateState()
         }
-    }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text("Обвновление вакансии (${currentStep.ordinal + 1}/2)") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        if (currentStep == UpdateStep.BASIC_INFO) onBackClick()
-                        else currentStep = UpdateStep.values()[currentStep.ordinal - 1]
-                    }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+        val state = remember { mutableStateOf(initialState) }
+        val descriptionState = remember { mutableStateOf(TextFieldValue(state.value.description)) }
+
+        LaunchedEffect(vacancyState) {
+            if (vacancyState is VacancyState.VacancyCreated) {
+                viewModel.clearSelectedVacancy()
+                onUpdateSuccess()
+            }
+        }
+
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = { Text("Обвновление вакансии (${currentStep.ordinal + 1}/2)") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            if (currentStep == UpdateStep.BASIC_INFO) onBackClick()
+                            else currentStep = UpdateStep.values()[currentStep.ordinal - 1]
+                        }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        }
+                    },
+                    actions = {
+                        StepIndicator(
+                            currentStep = currentStep.ordinal,
+                            totalSteps = UpdateStep.values().size,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
                     }
-                },
-                actions = {
-                    StepIndicator(
-                        currentStep = currentStep.ordinal,
-                        totalSteps = UpdateStep.values().size,
-                        modifier = Modifier.padding(end = 16.dp)
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (currentStep) {
+                    UpdateStep.BASIC_INFO -> BasicInfoStep(
+                        state = state,
+                        descriptionState = descriptionState,
+                        onNext = { currentStep = UpdateStep.REQUIREMENTS },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    UpdateStep.REQUIREMENTS -> RequirementsStep(
+                        state = state,
+                        onSubmit = onUpdateClick,
+                        modifier = Modifier.widthIn(max = 500.dp)
                     )
                 }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (currentStep) {
-                UpdateStep.BASIC_INFO -> BasicInfoStep(
-                    state = state,
-                    descriptionState = descriptionState,
-                    onNext = { currentStep = UpdateStep.REQUIREMENTS },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                UpdateStep.REQUIREMENTS -> RequirementsStep(
-                    state = state,
-                    onSubmit = onUpdateClick,
-                    modifier = Modifier.widthIn(max = 500.dp)
-                )
             }
         }
     }
-
 }
 
 @Composable
@@ -188,12 +198,11 @@ private fun RequirementsStep(
 
         HireBoardButton(
             text = "Обновить вакансию",
-            onClick = {onSubmit(state.value)},
+            onClick = { onSubmit(state.value) },
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
-
 
 @Composable
 private fun StepIndicator(

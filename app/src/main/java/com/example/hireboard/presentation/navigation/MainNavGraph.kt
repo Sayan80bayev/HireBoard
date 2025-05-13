@@ -13,11 +13,13 @@ import com.example.hireboard.domain.model.User
 import com.example.hireboard.domain.model.Vacancy
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
+import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.presentation.screens.main.MainScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyCreationScreen
+import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsEmployeeScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyUpdateScreen
 import com.example.hireboard.presentation.viewmodels.VacancyState
@@ -30,7 +32,8 @@ fun NavGraphBuilder.mainNavGraph(
     getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase,
     getVacancyUseCase: GetVacancyUseCase,
     deleteVacancyUseCase: DeleteVacancyUseCase,
-    updateVacancyUseCase: UpdateVacancyUseCase
+    updateVacancyUseCase: UpdateVacancyUseCase,
+    getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase // Added
 ) {
     navigation(
         startDestination = "main_screen",
@@ -45,7 +48,8 @@ fun NavGraphBuilder.mainNavGraph(
                         getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
                         updateVacancyUseCase = updateVacancyUseCase,
                         getVacancyUseCase = getVacancyUseCase,
-                        deleteVacancyUseCase = deleteVacancyUseCase
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
                 }
 
@@ -55,7 +59,11 @@ fun NavGraphBuilder.mainNavGraph(
                     user = user,
                     vacancies = vacancies,
                     onVacancyClick = { vacancyId ->
-                        navController.navigate(VacancyRoutes.vacancyDetails(vacancyId))
+                        if (user is User.Employer) {
+                            navController.navigate(VacancyRoutes.vacancyDetails(vacancyId))
+                        } else {
+                            navController.navigate(VacancyRoutes.vacancyDetailsEmployee(vacancyId))
+                        }
                     },
                     onCreateVacancyClick = {
                         navController.navigate(VacancyRoutes.VacancyCreation)
@@ -63,6 +71,29 @@ fun NavGraphBuilder.mainNavGraph(
                 )
             } else {
                 println("There's no User")
+            }
+        }
+
+        composable(VacancyRoutes.VacancyDetailsEmployee) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
+            if (id != null) {
+                val vacancyViewModel = remember {
+                    VacancyViewModel(
+                        currentUser = user,
+                        createVacancyUseCase = createVacancyUseCase,
+                        getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
+                        updateVacancyUseCase = updateVacancyUseCase,
+                        getVacancyUseCase = getVacancyUseCase,
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
+                    )
+                }
+
+                VacancyDetailsEmployeeScreen(
+                    id = id,
+                    viewModel = vacancyViewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
         }
 
@@ -76,7 +107,8 @@ fun NavGraphBuilder.mainNavGraph(
                         getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
                         updateVacancyUseCase = updateVacancyUseCase,
                         getVacancyUseCase = getVacancyUseCase,
-                        deleteVacancyUseCase = deleteVacancyUseCase
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
                 }
 
@@ -103,7 +135,8 @@ fun NavGraphBuilder.mainNavGraph(
                         getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
                         updateVacancyUseCase = updateVacancyUseCase,
                         getVacancyUseCase = getVacancyUseCase,
-                        deleteVacancyUseCase = deleteVacancyUseCase
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase =getAllActiveVacanciesUseCase
                     )
                 }
 
@@ -123,7 +156,7 @@ fun NavGraphBuilder.mainNavGraph(
 
         composable(VacancyRoutes.VacancyUpdate) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
-            if (id != null && user is User.Employer){
+            if (id != null && user is User.Employer) {
                 val vacancyViewModel = remember {
                     VacancyViewModel(
                         currentUser = user,
@@ -131,8 +164,17 @@ fun NavGraphBuilder.mainNavGraph(
                         getEmployerVacanciesUseCase = getEmployerVacanciesUseCase,
                         updateVacancyUseCase = updateVacancyUseCase,
                         getVacancyUseCase = getVacancyUseCase,
-                        deleteVacancyUseCase = deleteVacancyUseCase
+                        deleteVacancyUseCase = deleteVacancyUseCase,
+                        getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
+                }
+
+                val updateState by vacancyViewModel.vacancyState.collectAsState()
+
+                LaunchedEffect(updateState) {
+                    if (updateState is VacancyState.VacancyUpdated) {
+                        navController.popBackStack()
+                    }
                 }
 
                 VacancyUpdateScreen(
@@ -143,7 +185,6 @@ fun NavGraphBuilder.mainNavGraph(
                         vacancyViewModel.updateVacancy(vacancy)
                     },
                     onUpdateSuccess = {
-                        navController.popBackStack()
                     }
                 )
             }

@@ -5,13 +5,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.hireboard.domain.model.Vacancy
@@ -21,25 +18,16 @@ import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VacancyDetailsScreen(
+fun VacancyDetailsEmployeeScreen(
     id: Long,
     viewModel: VacancyViewModel,
     onBackClick: () -> Unit,
-    onUpdateClick: (Long) -> Unit,
-    onDeleteSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     viewModel.getVacancyDetails(id)
 
     val vacancyState by viewModel.vacancyState.collectAsState()
     val selectedVacancy by viewModel.selectedVacancy.collectAsState()
-
-    LaunchedEffect(vacancyState) {
-        when (vacancyState) {
-            is VacancyState.VacancyDeleted -> onDeleteSuccess()
-            else -> {}
-        }
-    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -52,25 +40,6 @@ fun VacancyDetailsScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            selectedVacancy?.let { vacancy ->
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ActionButton(
-                        icon = Icons.Default.Edit,
-                        contentDescription = "Update",
-                        onClick = { onUpdateClick(vacancy.id) }
-                    )
-                    ActionButton(
-                        icon = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        onClick = { viewModel.deleteVacancy(vacancy.id) }
-                    )
-                }
-            }
         }
     ) { innerPadding ->
         Column(
@@ -83,7 +52,7 @@ fun VacancyDetailsScreen(
         ) {
             when {
                 selectedVacancy != null -> {
-                    VacancyDetailsContent(vacancy = selectedVacancy!!)
+                    VacancyDetailsContentEmployee(vacancy = selectedVacancy!!)
                 }
                 vacancyState is VacancyState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -101,7 +70,7 @@ fun VacancyDetailsScreen(
 }
 
 @Composable
-private fun VacancyDetailsContent(vacancy: Vacancy) {
+private fun VacancyDetailsContentEmployee(vacancy: Vacancy) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -131,49 +100,10 @@ private fun VacancyDetailsContent(vacancy: Vacancy) {
             Text(text = vacancy.skillsRequired)
         }
 
-        Section(title = "Status") {
-            Text(text = if (vacancy.isActive) "Active" else "Inactive")
-        }
-    }
-}
-
-@Composable
-fun Section(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            tonalElevation = 1.dp,
+        HireBoardButton(
+            text = "Apply for vacancy",
+            onClick = { /* TODO: Add application logic */ },
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(modifier = Modifier.padding(16.dp)) {
-                content()
-            }
-        }
-    }
-}
-
-@Composable
-private fun ActionButton(
-    icon: ImageVector,
-    contentDescription: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    FloatingActionButton(
-        onClick = onClick,
-        modifier = modifier.size(56.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription
         )
     }
 }

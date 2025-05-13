@@ -9,4 +9,7 @@ object VacancyRoutes {
     const val VacancyUpdate = "vacancy_update/{vacancyId}"
     fun vacancyUpdate(vacancyId: Long) = "vacancy_update/$vacancyId"
 
+    const val VacancyDetailsEmployee = "vacancy_details_employee/{vacancyId}"
+    fun vacancyDetailsEmployee(vacancyId: Long) = "vacancy_details_employee/$vacancyId"
+
 }

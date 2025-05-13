@@ -6,6 +6,7 @@ import com.example.hireboard.domain.model.User
 import com.example.hireboard.domain.model.Vacancy
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
+import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
@@ -20,6 +21,7 @@ class VacancyViewModel(
     private val createVacancyUseCase: CreateVacancyUseCase,
     private val getEmployerVacanciesUseCase: GetEmployerVacanciesUseCase,
     private val getVacancyUseCase: GetVacancyUseCase,
+    private val getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase,
     private val updateVacancyUseCase: UpdateVacancyUseCase,
     private val deleteVacancyUseCase: DeleteVacancyUseCase
 ) : ViewModel() {
@@ -36,6 +38,8 @@ class VacancyViewModel(
     init {
         if (currentUser is User.Employer) {
             loadVacancies()
+        } else {
+            loadAllActiveVacancies()
         }
     }
 
@@ -56,6 +60,22 @@ class VacancyViewModel(
             }
         }
     }
+
+    fun loadAllActiveVacancies() {
+        viewModelScope.launch {
+            _vacancyState.value = VacancyState.Loading
+            getAllActiveVacanciesUseCase().fold(
+                onSuccess = { vacancies ->
+                    _vacancies.value = vacancies
+                    _vacancyState.value = VacancyState.Success
+                },
+                onFailure = {
+                    _vacancyState.value = VacancyState.Error(it.message ?: "Failed to load vacancies")
+                }
+            )
+        }
+    }
+
 
     fun createVacancy(vacancy: VacancyCreationState) {
         viewModelScope.launch {

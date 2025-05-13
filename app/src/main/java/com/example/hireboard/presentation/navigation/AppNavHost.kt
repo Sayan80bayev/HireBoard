@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
+import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
@@ -30,6 +31,7 @@ fun AppNavHost(
     getVacancyUseCase: GetVacancyUseCase,
     deleteVacancyUseCase: DeleteVacancyUseCase,
     updateVacancyUseCase: UpdateVacancyUseCase,
+    getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase,
     onAuthSuccess: () -> Unit = {}
 ) {
     val authViewModel = remember {
@@ -76,7 +78,8 @@ fun AppNavHost(
             navController = navController,
             getVacancyUseCase = getVacancyUseCase,
             deleteVacancyUseCase = deleteVacancyUseCase,
-            updateVacancyUseCase = updateVacancyUseCase
+            updateVacancyUseCase = updateVacancyUseCase,
+            getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
         )
     }
 }
