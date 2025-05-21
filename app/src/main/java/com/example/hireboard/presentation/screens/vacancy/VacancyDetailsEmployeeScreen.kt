@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.hireboard.domain.model.Vacancy
 import com.example.hireboard.presentation.components.HireBoardButton
+import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
 import com.example.hireboard.presentation.viewmodels.VacancyState
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
@@ -21,6 +22,7 @@ import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 fun VacancyDetailsEmployeeScreen(
     id: Long,
     viewModel: VacancyViewModel,
+    applicationViewModel: ApplicationViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,6 +30,8 @@ fun VacancyDetailsEmployeeScreen(
 
     val vacancyState by viewModel.vacancyState.collectAsState()
     val selectedVacancy by viewModel.selectedVacancy.collectAsState()
+
+    var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -52,7 +56,10 @@ fun VacancyDetailsEmployeeScreen(
         ) {
             when {
                 selectedVacancy != null -> {
-                    VacancyDetailsContentEmployee(vacancy = selectedVacancy!!)
+                    VacancyDetailsContentEmployee(
+                        vacancy = selectedVacancy!!,
+                        onApplyClick = { showDialog = true }
+                    )
                 }
                 vacancyState is VacancyState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -65,12 +72,39 @@ fun VacancyDetailsEmployeeScreen(
                     )
                 }
             }
+
+            if (showDialog && selectedVacancy != null) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Apply for Vacancy") },
+                    text = { Text("Are you sure you want to apply for this vacancy?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDialog = false
+                            applicationViewModel.applyForVacancy(
+                                vacancyId = selectedVacancy!!.id,
+                                coverLetter = "Hello I am applying for this job"
+                            )
+                        }) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDialog = false }) {
+                            Text("No")
+                        }
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun VacancyDetailsContentEmployee(vacancy: Vacancy) {
+private fun VacancyDetailsContentEmployee(
+    vacancy: Vacancy,
+    onApplyClick: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -102,7 +136,7 @@ private fun VacancyDetailsContentEmployee(vacancy: Vacancy) {
 
         HireBoardButton(
             text = "Apply for vacancy",
-            onClick = { /* TODO: Add application logic */ },
+            onClick = onApplyClick,
             modifier = Modifier.fillMaxWidth()
         )
     }

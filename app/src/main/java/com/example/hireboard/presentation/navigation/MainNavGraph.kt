@@ -4,24 +4,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.hireboard.domain.model.User
-import com.example.hireboard.domain.model.Vacancy
+import com.example.hireboard.domain.usecase.ApplyForVacancyUseCase
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetEmployeeApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
+import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
+import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
+import com.example.hireboard.presentation.screens.application.ApplicationListScreen
 import com.example.hireboard.presentation.screens.main.MainScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyCreationScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsEmployeeScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyUpdateScreen
+import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
 import com.example.hireboard.presentation.viewmodels.VacancyState
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
@@ -33,7 +38,12 @@ fun NavGraphBuilder.mainNavGraph(
     getVacancyUseCase: GetVacancyUseCase,
     deleteVacancyUseCase: DeleteVacancyUseCase,
     updateVacancyUseCase: UpdateVacancyUseCase,
-    getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase // Added
+    getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase,
+    applyForVacancyUseCase: ApplyForVacancyUseCase,
+    getEmployeeApplicationsUseCase: GetEmployeeApplicationsUseCase,
+    getVacancyApplicationsUseCase: GetVacancyApplicationsUseCase,
+    updateApplicationStatusUseCase: UpdateApplicationStatusUseCase,
+    withdrawApplicationUseCase: WithdrawApplicationUseCase
 ) {
     navigation(
         startDestination = "main_screen",
@@ -52,6 +62,16 @@ fun NavGraphBuilder.mainNavGraph(
                         getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
                 }
+                val applicationViewModel = remember {
+                    ApplicationViewModel(
+                        currentUser = user,
+                        applyForVacancyUseCase = applyForVacancyUseCase,
+                        getEmployeeApplicationsUseCase = getEmployeeApplicationsUseCase,
+                        getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
+                        updateApplicationStatusUseCase = updateApplicationStatusUseCase,
+                        withdrawApplicationUseCase = withdrawApplicationUseCase
+                    )
+                }
 
                 val vacancies by vacancyViewModel.vacancies.collectAsState()
 
@@ -67,7 +87,7 @@ fun NavGraphBuilder.mainNavGraph(
                     },
                     onCreateVacancyClick = {
                         navController.navigate(VacancyRoutes.VacancyCreation)
-                    }
+                    },
                 )
             } else {
                 println("There's no User")
@@ -88,10 +108,20 @@ fun NavGraphBuilder.mainNavGraph(
                         getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
                     )
                 }
-
+                val applicationViewModel = remember {
+                    ApplicationViewModel(
+                        currentUser = user,
+                        applyForVacancyUseCase = applyForVacancyUseCase,
+                        getEmployeeApplicationsUseCase = getEmployeeApplicationsUseCase,
+                        getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
+                        updateApplicationStatusUseCase = updateApplicationStatusUseCase,
+                        withdrawApplicationUseCase = withdrawApplicationUseCase
+                    )
+                }
                 VacancyDetailsEmployeeScreen(
                     id = id,
                     viewModel = vacancyViewModel,
+                    applicationViewModel = applicationViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
@@ -149,6 +179,9 @@ fun NavGraphBuilder.mainNavGraph(
                     },
                     onUpdateClick = { vacancyId ->
                         navController.navigate(VacancyRoutes.vacancyUpdate(vacancyId))
+                    },
+                    onViewApplicationsClick = { vacancyId ->
+                        navController.navigate(ApplicationRoutes.applicationList(vacancyId))
                     }
                 )
             }
@@ -186,6 +219,27 @@ fun NavGraphBuilder.mainNavGraph(
                     },
                     onUpdateSuccess = {
                     }
+                )
+            }
+        }
+        // Add this composable within the mainNavGraph function
+        composable(ApplicationRoutes.ApplicationList) { backStackEntry ->
+            val vacancyId = backStackEntry.arguments?.getString("vacancyId")?.toLongOrNull()
+            if (vacancyId != null && user is User.Employer) {
+                val applicationViewModel = remember {
+                    ApplicationViewModel(
+                        currentUser = user,
+                        applyForVacancyUseCase = applyForVacancyUseCase,
+                        getEmployeeApplicationsUseCase = getEmployeeApplicationsUseCase,
+                        getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
+                        updateApplicationStatusUseCase = updateApplicationStatusUseCase,
+                        withdrawApplicationUseCase = withdrawApplicationUseCase
+                    )
+                }
+                ApplicationListScreen(
+                    vacancyId = vacancyId,
+                    viewModel = applicationViewModel,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

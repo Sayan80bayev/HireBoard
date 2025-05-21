@@ -8,15 +8,20 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
+import com.example.hireboard.domain.usecase.ApplyForVacancyUseCase
 import com.example.hireboard.domain.usecase.CreateVacancyUseCase
 import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetEmployeeApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
+import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
+import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
 import com.example.hireboard.presentation.viewmodels.AuthState
 import com.example.hireboard.presentation.viewmodels.AuthViewModel
 
@@ -32,6 +37,11 @@ fun AppNavHost(
     deleteVacancyUseCase: DeleteVacancyUseCase,
     updateVacancyUseCase: UpdateVacancyUseCase,
     getAllActiveVacanciesUseCase: GetAllActiveVacanciesUseCase,
+    applyForVacancyUseCase: ApplyForVacancyUseCase,
+    getEmployeeApplicationsUseCase: GetEmployeeApplicationsUseCase,
+    getVacancyApplicationsUseCase: GetVacancyApplicationsUseCase,
+    updateApplicationStatusUseCase: UpdateApplicationStatusUseCase,
+    withdrawApplicationUseCase: WithdrawApplicationUseCase,
     onAuthSuccess: () -> Unit = {}
 ) {
     val authViewModel = remember {
@@ -79,7 +89,12 @@ fun AppNavHost(
             getVacancyUseCase = getVacancyUseCase,
             deleteVacancyUseCase = deleteVacancyUseCase,
             updateVacancyUseCase = updateVacancyUseCase,
-            getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase
+            getAllActiveVacanciesUseCase = getAllActiveVacanciesUseCase,
+            applyForVacancyUseCase = applyForVacancyUseCase,
+            getEmployeeApplicationsUseCase = getEmployeeApplicationsUseCase,
+            getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
+            updateApplicationStatusUseCase = updateApplicationStatusUseCase,
+            withdrawApplicationUseCase = withdrawApplicationUseCase,
         )
     }
 }

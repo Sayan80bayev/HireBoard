@@ -27,6 +27,7 @@ fun VacancyDetailsScreen(
     onBackClick: () -> Unit,
     onUpdateClick: (Long) -> Unit,
     onDeleteSuccess: () -> Unit,
+    onViewApplicationsClick: (Long) -> Unit, // New parameter
     modifier: Modifier = Modifier
 ) {
     viewModel.getVacancyDetails(id)
@@ -83,7 +84,10 @@ fun VacancyDetailsScreen(
         ) {
             when {
                 selectedVacancy != null -> {
-                    VacancyDetailsContent(vacancy = selectedVacancy!!)
+                    VacancyDetailsContent(
+                        vacancy = selectedVacancy!!,
+                        onViewApplicationsClick = { onViewApplicationsClick(selectedVacancy!!.id) }
+                    )
                 }
                 vacancyState is VacancyState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -101,7 +105,10 @@ fun VacancyDetailsScreen(
 }
 
 @Composable
-private fun VacancyDetailsContent(vacancy: Vacancy) {
+private fun VacancyDetailsContent(
+    vacancy: Vacancy,
+    onViewApplicationsClick: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -133,6 +140,13 @@ private fun VacancyDetailsContent(vacancy: Vacancy) {
 
         Section(title = "Status") {
             Text(text = if (vacancy.isActive) "Active" else "Inactive")
+        }
+
+        Section(title = "Applications") {
+            HireBoardButton(
+                text = "View Applications",
+                onClick = onViewApplicationsClick
+            )
         }
     }
 }

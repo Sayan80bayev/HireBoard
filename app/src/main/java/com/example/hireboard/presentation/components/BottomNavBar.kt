@@ -20,7 +20,7 @@ private val employeeItems = listOf(
 )
 
 private val employerItems = listOf(
-    BottomNavItem("Главная", Icons.Filled.Home),
+    BottomNavItem("Отклики", Icons.Filled.ChatBubble),
     BottomNavItem("Вакансии", Icons.Filled.Work, badgeCount = 5),
     BottomNavItem("Профиль", Icons.Filled.Person),
     BottomNavItem("Настройки", Icons.Filled.Settings)
