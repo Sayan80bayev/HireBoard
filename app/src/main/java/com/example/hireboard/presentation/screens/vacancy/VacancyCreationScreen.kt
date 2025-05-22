@@ -78,6 +78,7 @@ fun VacancyCreationScreen(
                 CreationStep.REQUIREMENTS -> RequirementsStep(
                     state = state,
                     onSubmit = onCreateClick,
+                    onCreationSuccess = onCreationSuccess,
                     modifier = Modifier.widthIn(max = 500.dp)
                 )
             }
@@ -137,6 +138,7 @@ private fun BasicInfoStep(
 private fun RequirementsStep(
     state: MutableState<VacancyCreationState>,
     onSubmit: (VacancyCreationState) -> Unit,
+    onCreationSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -170,7 +172,10 @@ private fun RequirementsStep(
 
         HireBoardButton(
             text = "Создать вакансию",
-            onClick = {onSubmit(state.value)},
+            onClick = {
+                onSubmit(state.value)
+                onCreationSuccess()
+                      },
             modifier = Modifier.fillMaxWidth()
         )
     }
