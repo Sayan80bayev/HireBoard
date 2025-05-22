@@ -68,7 +68,10 @@ fun VacancyDetailsScreen(
                     ActionButton(
                         icon = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        onClick = { viewModel.deleteVacancy(vacancy.id) }
+                        onClick = {
+                            viewModel.deleteVacancy(vacancy.id)
+                            onDeleteSuccess()
+                        }
                     )
                 }
             }

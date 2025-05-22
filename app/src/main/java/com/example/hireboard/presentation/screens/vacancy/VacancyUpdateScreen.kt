@@ -106,6 +106,7 @@ fun VacancyUpdateScreen(
                     UpdateStep.REQUIREMENTS -> RequirementsStep(
                         state = state,
                         onSubmit = onUpdateClick,
+                        onUpdateSuccess =onUpdateSuccess,
                         modifier = Modifier.widthIn(max = 500.dp)
                     )
                 }
@@ -165,6 +166,7 @@ private fun BasicInfoStep(
 private fun RequirementsStep(
     state: MutableState<VacancyUpdateState>,
     onSubmit: (VacancyUpdateState) -> Unit,
+    onUpdateSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -198,7 +200,10 @@ private fun RequirementsStep(
 
         HireBoardButton(
             text = "Обновить вакансию",
-            onClick = { onSubmit(state.value) },
+            onClick = {
+                onSubmit(state.value)
+                onUpdateSuccess()
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }
