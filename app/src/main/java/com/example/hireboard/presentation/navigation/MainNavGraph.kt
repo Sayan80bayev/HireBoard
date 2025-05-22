@@ -24,6 +24,7 @@ import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
 import com.example.hireboard.presentation.screens.application.ApplicantScreen
+import com.example.hireboard.presentation.screens.application.ApplicationEmployeeListScreen
 import com.example.hireboard.presentation.screens.application.ApplicationListScreen
 import com.example.hireboard.presentation.screens.main.MainScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyCreationScreen
@@ -59,6 +60,14 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         composable("main_screen") {
             if (user != null) {
+                val userProfileViewModel = remember {
+                    UserProfileViewModel(
+                        currentUser = user,
+                        getUserUseCase = getUserUseCase,
+                        updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
+                        updateEmployerProfileUseCase = updateEmployerProfileUseCase
+                    )
+                }
                 val vacancyViewModel = remember {
                     VacancyViewModel(
                         currentUser = user,
@@ -93,6 +102,9 @@ fun NavGraphBuilder.mainNavGraph(
                             navController.navigate(VacancyRoutes.vacancyDetailsEmployee(vacancyId))
                         }
                     },
+                    applicationViewModel = applicationViewModel,
+                    userProfileViewModel = userProfileViewModel,
+                    vacancyViewModel = vacancyViewModel,
                     onCreateVacancyClick = {
                         navController.navigate(VacancyRoutes.VacancyCreation)
                     },
@@ -126,6 +138,7 @@ fun NavGraphBuilder.mainNavGraph(
                         withdrawApplicationUseCase = withdrawApplicationUseCase
                     )
                 }
+
                 VacancyDetailsEmployeeScreen(
                     id = id,
                     viewModel = vacancyViewModel,

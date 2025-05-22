@@ -14,14 +14,14 @@ data class BottomNavItem(val label: String, val icon: ImageVector, val badgeCoun
 
 private val employeeItems = listOf(
     BottomNavItem("Главная", Icons.Filled.Home),
-    BottomNavItem("Отклики", Icons.Filled.Mail, badgeCount = 2),
+    BottomNavItem("Отклики", Icons.Filled.Mail),
     BottomNavItem("Профиль", Icons.Filled.Person),
     BottomNavItem("Настройки", Icons.Filled.Settings)
 )
 
 private val employerItems = listOf(
-    BottomNavItem("Отклики", Icons.Filled.ChatBubble),
-    BottomNavItem("Вакансии", Icons.Filled.Work, badgeCount = 5),
+    BottomNavItem("Главная", Icons.Filled.Home),
+    BottomNavItem("Вакансии", Icons.Filled.Work),
     BottomNavItem("Профиль", Icons.Filled.Person),
     BottomNavItem("Настройки", Icons.Filled.Settings)
 )

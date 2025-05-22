@@ -117,7 +117,7 @@ fun ApplicationCard(
     ) {
         Column(modifier = Modifier.padding(16.dp).clickable {
             if (employee != null) {
-                onClick(employee.id, application.id)
+                onClick(application.employeeId, application.id)
             }
         },
         ) {

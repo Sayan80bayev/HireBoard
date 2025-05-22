@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 open class ApplicationViewModel(
-    private val currentUser: User?,
+    val currentUser: User?,
     private val applyForVacancyUseCase: ApplyForVacancyUseCase,
     private val getEmployeeApplicationsUseCase: GetEmployeeApplicationsUseCase,
     private val getVacancyApplicationsUseCase: GetVacancyApplicationsUseCase,
