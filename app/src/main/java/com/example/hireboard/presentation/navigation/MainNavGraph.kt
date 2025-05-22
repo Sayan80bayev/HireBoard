@@ -23,6 +23,7 @@ import com.example.hireboard.domain.usecase.UpdateEmployeeProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
+import com.example.hireboard.presentation.screens.application.ApplicantScreen
 import com.example.hireboard.presentation.screens.application.ApplicationListScreen
 import com.example.hireboard.presentation.screens.main.MainScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyCreationScreen
@@ -255,10 +256,42 @@ fun NavGraphBuilder.mainNavGraph(
                     vacancyId = vacancyId,
                     applicationViewModel = applicationViewModel,
                     userProfileViewModel = userProfileViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onApplicationClick = {employeeId, applicationId -> navController.navigate(ApplicationRoutes.applicantScreen(employeeId, applicationId))}
+                )
+            }
+        }
+        composable(ApplicationRoutes.ApplicantScreen) { backStackEntry ->
+            val employeeId = backStackEntry.arguments?.getString("employeeId")?.toLongOrNull()
+            val applicationId = backStackEntry.arguments?.getString("applicationId")?.toLongOrNull()
+            if (employeeId!= null && user is User.Employer && applicationId != null) {
+                val applicationViewModel = remember {
+                    ApplicationViewModel(
+                        currentUser = user,
+                        applyForVacancyUseCase = applyForVacancyUseCase,
+                        getEmployeeApplicationsUseCase = getEmployeeApplicationsUseCase,
+                        getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
+                        updateApplicationStatusUseCase = updateApplicationStatusUseCase,
+                        withdrawApplicationUseCase = withdrawApplicationUseCase
+                    )
+                }
+
+                val userProfileViewModel = remember {
+                    UserProfileViewModel(
+                        currentUser = user,
+                        getUserUseCase = getUserUseCase,
+                        updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
+                        updateEmployerProfileUseCase = updateEmployerProfileUseCase
+                    )
+                }
+                ApplicantScreen(
+                    applicationId,
+                    employeeId,
+                    applicationViewModel,
+                    userProfileViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
         }
-
     }
 }

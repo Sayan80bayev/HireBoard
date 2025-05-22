@@ -1,5 +1,6 @@
 package com.example.hireboard.presentation.screens.application
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ fun ApplicationListScreen(
     vacancyId: Long,
     applicationViewModel: ApplicationViewModel,
     userProfileViewModel: UserProfileViewModel,
+    onApplicationClick: (Long, Long) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -93,7 +95,8 @@ fun ApplicationListScreen(
 
                         ApplicationCard(
                             application = application,
-                            employee = employee.value
+                            employee = employee.value,
+                            onClick = onApplicationClick
                         )
                     }
                 }
@@ -105,13 +108,19 @@ fun ApplicationListScreen(
 @Composable
 fun ApplicationCard(
     application: Application,
-    employee: User.Employee?
+    employee: User.Employee?,
+    onClick: (Long, Long) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp).clickable {
+            if (employee != null) {
+                onClick(employee.id, application.id)
+            }
+        },
+        ) {
             employee?.let {
                 Text("Applicant: ${it.name}", style = MaterialTheme.typography.titleMedium)
                 Text("Email: ${it.email}")
