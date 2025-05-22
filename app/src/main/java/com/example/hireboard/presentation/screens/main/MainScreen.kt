@@ -4,15 +4,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.example.hireboard.domain.model.User
 import com.example.hireboard.domain.model.Vacancy
 import com.example.hireboard.presentation.components.BottomNavBar
 import com.example.hireboard.presentation.screens.application.ApplicationEmployeeListScreen
+import com.example.hireboard.presentation.screens.auth.LogoutScreen
 import com.example.hireboard.presentation.screens.profile.EmployeeProfileScreen
 import com.example.hireboard.presentation.screens.profile.EmployerProfileScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyListScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyScreen
 import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
+import com.example.hireboard.presentation.viewmodels.AuthViewModel
 import com.example.hireboard.presentation.viewmodels.UserProfileViewModel
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
@@ -22,6 +25,8 @@ fun MainScreen(
     vacancies: List<Vacancy> = emptyList(),
     applicationViewModel: ApplicationViewModel,
     userProfileViewModel: UserProfileViewModel,
+    authViewModel: AuthViewModel,
+    navController: NavController,
     vacancyViewModel: VacancyViewModel,
     onVacancyClick: (Long) -> Unit = {},
     onCreateVacancyClick: () -> Unit = {},
@@ -47,6 +52,13 @@ fun MainScreen(
             .padding(innerPadding)
         ) {
             when {
+                selectedItem == 0 -> {
+                        VacancyListScreen(
+                            vacancies = vacancies,
+                            onVacancyClick = onVacancyClick,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                }
                 isEmployer && selectedItem == 1 -> {
                     VacancyScreen(
                         vacancies = vacancies,
@@ -77,10 +89,9 @@ fun MainScreen(
                     )
                 }
                 else -> {
-                    VacancyListScreen(
-                        vacancies = vacancies,
-                        onVacancyClick = onVacancyClick,
-                        modifier = Modifier.fillMaxSize()
+                    LogoutScreen(
+                        authViewModel = authViewModel,
+                        navController = navController
                     )
                 }
             }

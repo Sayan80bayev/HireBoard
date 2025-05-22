@@ -18,6 +18,9 @@ import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetUserUseCase
 import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
+import com.example.hireboard.domain.usecase.LoginUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
+import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
 import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
 import com.example.hireboard.domain.usecase.UpdateEmployeeProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
@@ -32,6 +35,7 @@ import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsEmployee
 import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyUpdateScreen
 import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
+import com.example.hireboard.presentation.viewmodels.AuthViewModel
 import com.example.hireboard.presentation.viewmodels.UserProfileViewModel
 import com.example.hireboard.presentation.viewmodels.VacancyState
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
@@ -52,7 +56,10 @@ fun NavGraphBuilder.mainNavGraph(
     withdrawApplicationUseCase: WithdrawApplicationUseCase,
     getUserUseCase: GetUserUseCase,
     updateEmployeeProfileUseCase: UpdateEmployeeProfileUseCase,
-    updateEmployerProfileUseCase: UpdateEmployerProfileUseCase
+    updateEmployerProfileUseCase: UpdateEmployerProfileUseCase,
+    loginUseCase: LoginUseCase,
+    registerEmployeeUseCase: RegisterEmployeeUseCase,
+    registerEmployerUseCase: RegisterEmployerUseCase
 ) {
     navigation(
         startDestination = "main_screen",
@@ -60,6 +67,13 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         composable("main_screen") {
             if (user != null) {
+                val authViewModel = remember {
+                    AuthViewModel(
+                        loginUseCase = loginUseCase,
+                        registerEmployeeUseCase = registerEmployeeUseCase,
+                        registerEmployerUseCase = registerEmployerUseCase
+                    )
+                }
                 val userProfileViewModel = remember {
                     UserProfileViewModel(
                         currentUser = user,
@@ -108,6 +122,8 @@ fun NavGraphBuilder.mainNavGraph(
                     onCreateVacancyClick = {
                         navController.navigate(VacancyRoutes.VacancyCreation)
                     },
+                    authViewModel = authViewModel,
+                    navController = navController
                 )
             } else {
                 println("There's no User")

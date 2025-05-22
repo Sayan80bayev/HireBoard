@@ -52,6 +52,7 @@ fun LoginScreen(
         )
 
         HireBoardTextField(
+            modifier = Modifier.height(60.dp),
             value = email,
             onValueChange = { email = it },
             label = "Email",
@@ -62,6 +63,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         HireBoardTextField(
+            modifier = Modifier.height(60.dp),
             value = password,
             onValueChange = { password = it },
             label = "Пароль",

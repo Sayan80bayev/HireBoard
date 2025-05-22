@@ -103,7 +103,10 @@ fun AppNavHost(
             withdrawApplicationUseCase = withdrawApplicationUseCase,
             getUserUseCase = getUserUseCase,
             updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
-            updateEmployerProfileUseCase = updateEmployerProfileUseCase
+            updateEmployerProfileUseCase = updateEmployerProfileUseCase,
+            loginUseCase = loginUseCase,
+            registerEmployeeUseCase = registerEmployeeUseCase,
+            registerEmployerUseCase = registerEmployerUseCase,
         )
     }
 }

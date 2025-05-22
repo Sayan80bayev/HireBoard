@@ -67,6 +67,7 @@ class UserProfileViewModel(
                 },
                 onFailure = {
                     _profileState.value = UserProfileState.Error(it.message ?: "Update failed")
+                    println("Update failed")
                 }
             )
         }
