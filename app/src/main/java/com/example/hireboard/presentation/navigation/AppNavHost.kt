@@ -14,12 +14,15 @@ import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployeeApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetUserUseCase
 import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
 import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployeeProfileUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
 import com.example.hireboard.presentation.viewmodels.AuthState
@@ -42,6 +45,9 @@ fun AppNavHost(
     getVacancyApplicationsUseCase: GetVacancyApplicationsUseCase,
     updateApplicationStatusUseCase: UpdateApplicationStatusUseCase,
     withdrawApplicationUseCase: WithdrawApplicationUseCase,
+    getUserUseCase: GetUserUseCase,
+    updateEmployeeProfileUseCase: UpdateEmployeeProfileUseCase,
+    updateEmployerProfileUseCase: UpdateEmployerProfileUseCase,
     onAuthSuccess: () -> Unit = {}
 ) {
     val authViewModel = remember {
@@ -95,6 +101,9 @@ fun AppNavHost(
             getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
             updateApplicationStatusUseCase = updateApplicationStatusUseCase,
             withdrawApplicationUseCase = withdrawApplicationUseCase,
+            getUserUseCase = getUserUseCase,
+            updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
+            updateEmployerProfileUseCase = updateEmployerProfileUseCase
         )
     }
 }

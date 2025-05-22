@@ -15,9 +15,12 @@ import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployeeApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetUserUseCase
 import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployeeProfileUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
 import com.example.hireboard.presentation.screens.application.ApplicationListScreen
@@ -27,6 +30,7 @@ import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsEmployee
 import com.example.hireboard.presentation.screens.vacancy.VacancyDetailsScreen
 import com.example.hireboard.presentation.screens.vacancy.VacancyUpdateScreen
 import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
+import com.example.hireboard.presentation.viewmodels.UserProfileViewModel
 import com.example.hireboard.presentation.viewmodels.VacancyState
 import com.example.hireboard.presentation.viewmodels.VacancyViewModel
 
@@ -43,7 +47,10 @@ fun NavGraphBuilder.mainNavGraph(
     getEmployeeApplicationsUseCase: GetEmployeeApplicationsUseCase,
     getVacancyApplicationsUseCase: GetVacancyApplicationsUseCase,
     updateApplicationStatusUseCase: UpdateApplicationStatusUseCase,
-    withdrawApplicationUseCase: WithdrawApplicationUseCase
+    withdrawApplicationUseCase: WithdrawApplicationUseCase,
+    getUserUseCase: GetUserUseCase,
+    updateEmployeeProfileUseCase: UpdateEmployeeProfileUseCase,
+    updateEmployerProfileUseCase: UpdateEmployerProfileUseCase
 ) {
     navigation(
         startDestination = "main_screen",
@@ -236,9 +243,18 @@ fun NavGraphBuilder.mainNavGraph(
                         withdrawApplicationUseCase = withdrawApplicationUseCase
                     )
                 }
+                val userProfileViewModel = remember {
+                    UserProfileViewModel(
+                        currentUser = user,
+                        getUserUseCase = getUserUseCase,
+                        updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
+                        updateEmployerProfileUseCase = updateEmployerProfileUseCase
+                    )
+                }
                 ApplicationListScreen(
                     vacancyId = vacancyId,
-                    viewModel = applicationViewModel,
+                    applicationViewModel = applicationViewModel,
+                    userProfileViewModel = userProfileViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }

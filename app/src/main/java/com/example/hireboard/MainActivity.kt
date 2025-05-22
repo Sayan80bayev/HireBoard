@@ -18,12 +18,15 @@ import com.example.hireboard.domain.usecase.DeleteVacancyUseCase
 import com.example.hireboard.domain.usecase.GetAllActiveVacanciesUseCase
 import com.example.hireboard.domain.usecase.GetEmployeeApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetEmployerVacanciesUseCase
+import com.example.hireboard.domain.usecase.GetUserUseCase
 import com.example.hireboard.domain.usecase.GetVacancyApplicationsUseCase
 import com.example.hireboard.domain.usecase.GetVacancyUseCase
 import com.example.hireboard.domain.usecase.LoginUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployeeUseCase
 import com.example.hireboard.domain.usecase.RegisterEmployerUseCase
 import com.example.hireboard.domain.usecase.UpdateApplicationStatusUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployeeProfileUseCase
+import com.example.hireboard.domain.usecase.UpdateEmployerProfileUseCase
 import com.example.hireboard.domain.usecase.UpdateVacancyUseCase
 import com.example.hireboard.domain.usecase.WithdrawApplicationUseCase
 import com.example.hireboard.presentation.navigation.AppNavHost
@@ -40,6 +43,9 @@ class MainActivity : ComponentActivity() {
         val vacancyRepository = VacancyRepository(vacancyDao)
         val applicationDao = ApplicationDaoImpl(db)
         val applicationRepository = ApplicationRepository(applicationDao)
+        val userProfileDao = UserDaoImpl(db)
+        val userProfileRepository = UserRepository(userProfileDao)
+
 
         val loginUseCase = LoginUseCase(userRepository)
         val registerEmployeeUseCase = RegisterEmployeeUseCase(userRepository)
@@ -55,8 +61,9 @@ class MainActivity : ComponentActivity() {
         val getVacancyApplicationsUseCase = GetVacancyApplicationsUseCase(applicationRepository)
         val updateApplicationStatusUseCase = UpdateApplicationStatusUseCase(applicationRepository)
         val withdrawApplicationUseCase = WithdrawApplicationUseCase(applicationRepository)
-
-
+        val getUserUseCase = GetUserUseCase(userRepository)
+        val updateEmployeeProfileUseCase = UpdateEmployeeProfileUseCase(userProfileRepository)
+        val updateEmployerProfileUseCase = UpdateEmployerProfileUseCase(userProfileRepository)
         setContent {
             HireBoardTheme {
                 val navController = rememberNavController()
@@ -77,6 +84,9 @@ class MainActivity : ComponentActivity() {
                         getVacancyApplicationsUseCase = getVacancyApplicationsUseCase,
                         updateApplicationStatusUseCase = updateApplicationStatusUseCase,
                         withdrawApplicationUseCase = withdrawApplicationUseCase,
+                        getUserUseCase = getUserUseCase,
+                        updateEmployeeProfileUseCase = updateEmployeeProfileUseCase,
+                        updateEmployerProfileUseCase = updateEmployerProfileUseCase
                     )
                 }
             }

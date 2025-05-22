@@ -20,30 +20,41 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hireboard.domain.model.Application
+import com.example.hireboard.domain.model.User
 import com.example.hireboard.presentation.viewmodels.ApplicationState
 import com.example.hireboard.presentation.viewmodels.ApplicationViewModel
+import com.example.hireboard.presentation.viewmodels.UserProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApplicationListScreen(
     vacancyId: Long,
-    viewModel: ApplicationViewModel,
+    applicationViewModel: ApplicationViewModel,
+    userProfileViewModel: UserProfileViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val applications by viewModel.applications.collectAsState()
-    val state by viewModel.applicationState.collectAsState()
+    val applications by applicationViewModel.applications.collectAsState()
+    val appState by applicationViewModel.applicationState.collectAsState()
+    val currentUser by userProfileViewModel.userProfile.collectAsState()
 
-    viewModel.loadVacancyApplications(vacancyId)
+    LaunchedEffect(vacancyId) {
+        applicationViewModel.loadVacancyApplications(vacancyId)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Applications") },
+                title = { Text("Applications") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -59,23 +70,31 @@ fun ApplicationListScreen(
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            when (state) {
-                is ApplicationState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is ApplicationState.Error -> {
-                    Text(
-                        text = (state as ApplicationState.Error).message,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-                else -> {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(applications) { application ->
-                            ApplicationCard(application = application)
+            when (appState) {
+                is ApplicationState.Loading -> CircularProgressIndicator()
+                is ApplicationState.Error -> Text(
+                    text = (appState as ApplicationState.Error).message,
+                    color = MaterialTheme.colorScheme.error
+                )
+                else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(applications) { application ->
+                        val employee = remember { mutableStateOf<User.Employee?>(null) }
+
+                        LaunchedEffect(application.employeeId) {
+                            userProfileViewModel.loadUserProfile(application.employeeId)
                         }
+
+                        userProfileViewModel.userProfile
+                            .collectAsState().value?.let { user ->
+                                if (user is User.Employee) {
+                                    employee.value = user
+                                }
+                            }
+
+                        ApplicationCard(
+                            application = application,
+                            employee = employee.value
+                        )
                     }
                 }
             }
@@ -84,14 +103,21 @@ fun ApplicationListScreen(
 }
 
 @Composable
-fun ApplicationCard(application: Application) {
+fun ApplicationCard(
+    application: Application,
+    employee: User.Employee?
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Cover Letter: ${application.coverLetter}")
-            Text(text = "Status: ${application.status}")
+            employee?.let {
+                Text("Applicant: ${it.name}", style = MaterialTheme.typography.titleMedium)
+                Text("Email: ${it.email}")
+            }
+            Text("Cover Letter: ${application.coverLetter}")
+            Text("Status: ${application.status}")
         }
     }
 }
